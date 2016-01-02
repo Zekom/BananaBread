@@ -53,6 +53,7 @@ var Module = {
   statusMessage: 'Starting...',
   progressElement: document.getElementById('progress'),
   setStatus: function(text) {
+console.log(text);
     if (Module.setStatus.interval) clearInterval(Module.setStatus.interval);
     var statusElement = document.getElementById('status-text');
     if (Module.finishedDataFileDownloads >= 1 && Module.finishedDataFileDownloads < Module.expectedDataFileDownloads) {
@@ -199,6 +200,7 @@ Module.readySound.src = 'assets/alarmcreatemiltaryfoot_1.ogg';
 // Pre-unzip ogz files, we can do this in parallel in a worker during preload
 
 (function() {
+  // TODO: use zee.js
   var zeeWorker = new Worker('game/zee-worker.js');
 
   var zeeCallbacks = [];
@@ -357,6 +359,7 @@ Module.tweakDetail = function(){}; // called from postLoadWorld, so useful to ma
 // Public API
 
 var BananaBread = {
+  // TODO: use api.js
   init: function() {
     BananaBread.setPlayerModelInfo = Module.cwrap('_ZN4game18setplayermodelinfoEPKcS1_S1_S1_S1_S1_S1_S1_S1_S1_S1_S1_b', null,
       ['string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'number']);

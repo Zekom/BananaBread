@@ -5,13 +5,13 @@ CXX = $(EMSCRIPTEN)/emcc
 EMCONFIGURE = $(EMSCRIPTEN)/emconfigure
 EMMAKE = $(EMSCRIPTEN)/emmake
 
-CXXFLAGS= -O2
+CXXFLAGS= -O3 -s USE_ZLIB=1
 override CXXFLAGS+= -Wall -fsigned-char -fno-exceptions -fno-rtti
 
 PLATFORM= emscripten
 PLATFORM_PREFIX= native
 
-INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include
+INCLUDES= -Ishared -Iengine -Ifpsgame -Ienet/include -I.
 
 STRIP=
 ifeq (,$(findstring -g,$(CXXFLAGS)))
@@ -418,21 +418,21 @@ CRUNCH_QUALITY = 64
 TOTAL_MEMORY = 67108864 # May need to adjust this for very large levels
 
 client: client.bc
-	cd .. ; cd .. ; python $(EMSCRIPTEN)/tools/file_packager.py base.data --crunch=$(CRUNCH_QUALITY) --preload $(BASE_FILES) --pre-run > game/preload_base.js
-	cd .. ; cd .. ; python $(EMSCRIPTEN)/tools/file_packager.py character.data --crunch=$(CRUNCH_QUALITY) --preload $(CHARACTER_FILES) --pre-run > game/preload_character.js
-	cd .. ; cd .. ; python $(EMSCRIPTEN)/tools/file_packager.py low.data --crunch=$(CRUNCH_QUALITY) --preload $(COLOS_FILES) --pre-run > game/preload_low.js
-	cd .. ; cd .. ; python $(EMSCRIPTEN)/tools/file_packager.py medium.data --crunch=$(CRUNCH_QUALITY) --preload $(TWO_TOWERS_FILES) --pre-run > game/preload_medium.js
-	cd .. ; cd .. ; python $(EMSCRIPTEN)/tools/file_packager.py high.data --crunch=$(CRUNCH_QUALITY) --preload $(ZOOM_FILES) --pre-run > game/preload_high.js
-	cd .. ; cd .. ; python $(EMSCRIPTEN)/tools/file_packager.py four.data --crunch=$(CRUNCH_QUALITY) --preload $(CYBER1_FILES) --pre-run > game/preload_four.js
-	cd .. ; cd .. ; python $(EMSCRIPTEN)/tools/file_packager.py five.data --crunch=$(CRUNCH_QUALITY) --preload $(ZOOMOUT_FILES) --pre-run > game/preload_five.js
-	cd .. ; cd .. ; $(CXX) $(CXXFLAGS) src/web/client.bc src/web/libz.a -o bb.js -s DISABLE_EXCEPTION_CATCHING=1 -s EXPORTED_FUNCTIONS="['_main', '__ZN4game18setplayermodelinfoEPKcS1_S1_S1_S1_S1_S1_S1_S1_S1_S1_S1_b', '__Z7executePKc', '__Z10executestrPKc', '_setforcecamera', '_bb_splash', '_bb_playsoundname']" src/web/enet/.libs/libenet.a -s TOTAL_MEMORY=$(TOTAL_MEMORY) --closure 1 -s LEGACY_GL_EMULATION=1
+	cd .. ; cd .. ; python $(EMSCRIPTEN)/tools/file_packager.py base.data --use-preload-plugins --crunch=$(CRUNCH_QUALITY) --preload $(BASE_FILES) > game/preload_base.js
+	cd .. ; cd .. ; python $(EMSCRIPTEN)/tools/file_packager.py character.data --use-preload-plugins --crunch=$(CRUNCH_QUALITY) --preload $(CHARACTER_FILES) > game/preload_character.js
+	cd .. ; cd .. ; python $(EMSCRIPTEN)/tools/file_packager.py low.data --use-preload-plugins --crunch=$(CRUNCH_QUALITY) --preload $(COLOS_FILES) > game/preload_low.js
+	cd .. ; cd .. ; python $(EMSCRIPTEN)/tools/file_packager.py medium.data --use-preload-plugins --crunch=$(CRUNCH_QUALITY) --preload $(TWO_TOWERS_FILES) > game/preload_medium.js
+	cd .. ; cd .. ; python $(EMSCRIPTEN)/tools/file_packager.py high.data --use-preload-plugins --crunch=$(CRUNCH_QUALITY) --preload $(ZOOM_FILES) > game/preload_high.js
+	cd .. ; cd .. ; python $(EMSCRIPTEN)/tools/file_packager.py four.data --use-preload-plugins --crunch=$(CRUNCH_QUALITY) --preload $(CYBER1_FILES) > game/preload_four.js
+	cd .. ; cd .. ; python $(EMSCRIPTEN)/tools/file_packager.py five.data --use-preload-plugins --crunch=$(CRUNCH_QUALITY) --preload $(ZOOMOUT_FILES) > game/preload_five.js
+	cd .. ; cd .. ; $(CXX) $(CXXFLAGS) src/web/client.bc -o bb.js -s DISABLE_EXCEPTION_CATCHING=1 -s EXPORTED_FUNCTIONS="['_main', '__ZN4game18setplayermodelinfoEPKcS1_S1_S1_S1_S1_S1_S1_S1_S1_S1_S1_b', '__Z7executePKc', '__Z10executestrPKc', '_setforcecamera', '_bb_splash', '_bb_playsoundname']" src/web/enet/.libs/libenet.a -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s LEGACY_GL_EMULATION=1 --closure 0 -O3  -s USE_ZLIB=1
 
 server.bc:	libenet $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) -o server.bc $(SERVER_OBJS) $(SERVER_LIBS)  
 
 server:	server.bc
-	cd .. ; cd .. ; $(CXX) $(CXXFLAGS) src/web/server.bc -o server.debug.html -s EXPORTED_FUNCTIONS="['_main']" -O2 --closure 0 src/web/enet/.libs/libenet.a
-	cd .. ; cd .. ; $(CXX) $(CXXFLAGS) src/web/server.bc -o server.html -s EXPORTED_FUNCTIONS="['_main']" -O2 src/web/enet/.libs/libenet.a
+	cd .. ; cd .. ; $(CXX) $(CXXFLAGS) src/web/server.bc -o server.debug.html -s EXPORTED_FUNCTIONS="['_main']" -O3 --closure 0 src/web/enet/.libs/libenet.a
+	cd .. ; cd .. ; $(CXX) $(CXXFLAGS) src/web/server.bc -o server.html -s EXPORTED_FUNCTIONS="['_main']" -O3 src/web/enet/.libs/libenet.a
 
 master: libenet $(MASTER_OBJS)
 	$(CXX) $(CXXFLAGS) -o sauer_master $(MASTER_OBJS) $(MASTER_LIBS)  
